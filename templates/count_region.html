@@ -1,0 +1,76 @@
+{% extends "admin_base.html" %}
+{% block title %}KopiGo{% endblock %}
+
+{% block hero %}
+  <style>
+    body {
+      background-color: #e6f0ff;
+      font-family: Arial, sans-serif;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+    .btn-primary {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+    .btn-primary:hover {
+      background-color: #004494;
+      border-color: #004494;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+
+  <!-- Hero Section -->
+  <div class="hero hero-inner">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mx-auto text-center">
+          <div class="intro-wrap">
+            <h1 class="mb-0">Entity Count by Regions</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <!-- Region Breakdown Table Section -->
+<br><br>
+<div class="container">
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>Region</th>
+          <th>Entity Type</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in summary %}
+        <tr>
+          <td>{{ row.region_name }}</td>
+          <td>{{ row.entity_type }}</td>
+          <td>{{ row.count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

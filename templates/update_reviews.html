@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+Update Review
+{% endblock %}
+
+{% block hero %}
+<div class="hero hero-inner">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mx-auto text-center">
+        <div class="intro-wrap">
+          <h1 class="mb-0">Update Review</h1>
+          <p class="text-white"><br>Updating your review for {{ eatery_name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row-lg-12 justify-content-center">
+  <div class="form-container">
+    <h2>Update Your Review</h2>
+    <form method="post" action="" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="rating">Rating (1 to 5)</label>
+        <select class="form-control" id="rating" name="rating" required>
+          <option value="">Choose...</option>
+          {% for i in range(1, 6) %}
+            <option value="{{ i }}" {% if review.rating == i %}selected{% endif %}>
+              {{ '★' * i + '☆' * (5 - i) }} ({{ i }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Upload an image (optional)</label>
+        <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+        {% if review.image_url %}
+          <p class="mt-2">Current image: <a href="{{ review.image_url }}" target="_blank">View</a></p>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="review">Your Review</label>
+        <textarea class="form-control" id="review" name="review" rows="5" required>{{ review.comment }}</textarea>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Update Review</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

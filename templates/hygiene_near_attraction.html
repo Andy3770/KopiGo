@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Clean Eateries Nearby{% endblock %}
+
+{% block hero %}
+<div class="hero hero-inner" style="background-image: url('/static/images/hero-background.jpg'); background-size: cover;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mx-auto text-center">
+        <div class="intro-wrap">
+          <h1 class="mb-0">🧼 Clean Food Spots</h1>
+          <p class="text-white">Find eateries near attractions with top hygiene ratings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="untree_co-section">
+  <div class="container">
+    <form method="get" class="mb-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+          <label for="attraction" class="form-label">Attraction Name:</label>
+          <input type="text" class="form-control" id="attraction" name="attraction" placeholder="e.g. Marina Bay" value="{{ keyword }}">
+        </div>
+        <div class="col-md-4">
+          <label for="hygiene" class="form-label">Maximum Hygiene Rating:</label>
+          <select class="form-select" id="hygiene" name="hygiene">
+            <option value="A" {% if hygiene == 'A' %}selected{% endif %}>A</option>
+            <option value="B" {% if hygiene == 'B' %}selected{% endif %}>B</option>
+            <option value="C" {% if hygiene == 'C' %}selected{% endif %}>C</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+      </div>
+    </form>
+    
+
+    <div class="row">
+      {% for row in results %}
+      <div class="col-12 col-sm-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="fw-bold">{{ row.business_name }}</h5>
+              <p><strong>Category:</strong> {{ row.category or 'N/A' }}</p>
+              <p><strong>Hygiene Rating:</strong> {{ row.hygiene_rating or 'N/A' }}</p>
+              <p><strong>Nearby Attraction:</strong> {{ row.attraction_name }}</p>
+              <p><strong>Rating:</strong> 
+                {% set rating = row.avg_rating if row.avg_rating else 0 %}
+                {% set full_stars = rating|int %}
+                {% set half_star = 1 if rating - full_stars >= 0.5 else 0 %}
+                {% set empty_stars = 5 - full_stars - half_star %}
+                {% for i in range(full_stars) %}
+                  <i class="bi bi-star-fill text-warning"></i>
+                {% endfor %}
+                {% if half_star %}
+                  <i class="bi bi-star-half text-warning"></i>
+                {% endif %}
+                {% for i in range(empty_stars) %}
+                  <i class="bi bi-star text-warning"></i>
+                {% endfor %}
+                <small>({{ rating }}/5)</small>
+              </p>
+            </div>
+            <a href="#" class="btn btn-primary w-100 mt-3" style="border-radius: 30px;">Review</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if results|length == 0 %}
+    <div class="alert alert-warning mt-4">No matching results found. Try adjusting your filters.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

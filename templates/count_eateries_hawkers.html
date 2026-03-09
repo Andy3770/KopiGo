@@ -1,0 +1,39 @@
+{% extends "admin_base.html" %}
+{% block title %}Eateries &amp; Hawkers Count{% endblock %}
+
+{% block hero %}
+  <style>
+    .hero-inner { background-color: #e6f0ff; }
+    .hero-inner h1 { color: #e6f0ff; text-align: center; margin: 2rem 0; }
+  </style>
+  <div class="hero hero-inner">
+    <div class="container">
+      <h1>Eateries &amp; Hawkers Count by Region</h1>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th>Region</th>
+            <th>Eatery Count</th>
+            <th>Hawker Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in summary %}
+          <tr>
+            <td>{{ row.region }}</td>
+            <td>{{ row.eatery_count }}</td>
+            <td>{{ row.hawker_count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

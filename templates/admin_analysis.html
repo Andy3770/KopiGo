@@ -1,0 +1,107 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Data Insights - KopiGo{% endblock %}
+
+{% block hero %}
+<div class="hero hero-inner">
+  <div class="container text-center">
+    <h1 class="text-white">Platform Insights</h1>
+    <p class="text-white">Explore the power of NoSQL analytics</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+  <!-- Chart 1: Ratings -->
+  <h3 class="text-center">Rating Distribution</h3>
+  <canvas id="ratingChart" class="mb-5"></canvas>
+
+  <!-- Chart 2: Reviews Over Time -->
+  <h3 class="text-center">Reviews Over Last 30 Days</h3>
+  <canvas id="timelineChart" class="mb-5"></canvas>
+
+  <!-- Chart 3: Top Postal Codes -->
+  <h3 class="text-center">Top 5 Postal Codes</h3>
+  <canvas id="postalChart" class="mb-5"></canvas>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ratingData = {{ rating_data | tojson }};
+const reviewTimelineData = {{ review_timeline_data | tojson }};
+const postalCodeData = {{ postal_code_data | tojson }};
+
+// Rating Distribution
+// Create a rating map from 1 to 5 with default 0
+const defaultRatings = {
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 0,
+  5: 0
+};
+
+// Overwrite with actual data from MongoDB
+ratingData.forEach(d => {
+  defaultRatings[d._id] = d.count;
+});
+
+// Populate the chart
+const labels = Object.keys(defaultRatings).map(r => `${r} Star `  + "⭐".repeat(r) );
+const data = Object.values(defaultRatings);
+
+new Chart(document.getElementById("ratingChart"), {
+  type: "bar",
+  data: {
+    labels: labels,
+    datasets: [{
+      label: "Number of Reviews",
+      data: data,
+      backgroundColor: "rgba(26, 55, 77, 0.7)"
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+// Reviews Over Time
+new Chart(document.getElementById("timelineChart"), {
+  type: "line",
+  data: {
+    labels: reviewTimelineData.map(d => d._id),
+    datasets: [{
+      label: "Reviews per Day",
+      data: reviewTimelineData.map(d => d.count),
+      fill: false,
+      borderColor: "rgba(26, 55, 77, 1)",
+      tension: 0.1
+    }]
+  },
+  options: { responsive: true }
+});
+
+// Postal Code Frequency
+new Chart(document.getElementById("postalChart"), {
+  type: "bar",
+  data: {
+    labels: postalCodeData.map(d => d._id),
+    datasets: [{
+      label: "Frequency",
+      data: postalCodeData.map(d => d.count),
+      backgroundColor: "rgba(100, 149, 237, 0.7)"
+    }]
+  },
+  options: { responsive: true, indexAxis: "y" }
+});
+</script>
+
+{% endblock %}

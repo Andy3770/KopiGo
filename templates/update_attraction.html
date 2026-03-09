@@ -1,0 +1,177 @@
+<!-- /*
+* Template Name: Tour
+* Template Author: Untree.co
+* Tempalte URI: https://untree.co/
+* License: https://creativecommons.org/licenses/by/3.0/
+*/ -->
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+  <meta content="Untree.co" name="author"/>
+  <link href="{{ url_for('static', filename='favicon.png') }}" rel="shortcut icon"/>
+  <meta content="" name="description">
+   <meta content="bootstrap, bootstrap4" name="keywords">
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Source+Serif+Pro:wght@400;700&amp;display=swap" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/owl.carousel.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/jquery.fancybox.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='fonts/icomoon/style.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='fonts/flaticon/font/flaticon.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/daterangepicker.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/aos.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+    <title>
+     Tour Free Bootstrap Template for Travel Agency by Untree.co
+    </title>
+   </meta>
+  </meta>
+    <style>
+    body {
+      background-color: #e6f0ff;
+      font-family: Arial, sans-serif;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+    .btn-primary {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+    .btn-primary:hover {
+      background-color: #004494;
+      border-color: #004494;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+ </head>
+ <body>
+  <div class="site-mobile-menu site-navbar-target">
+   <div class="site-mobile-menu-header">
+    <div class="site-mobile-menu-close">
+     <span class="icofont-close js-menu-toggle">
+     </span>
+    </div>
+   </div>
+   <div class="site-mobile-menu-body">
+   </div>
+  </div>
+    <nav class="site-nav">
+   <div class="container">
+    <div class="site-navigation">
+     <a class="logo m-0" href="{{ url_for('home') }}">
+      KopiGo
+      <li>
+       <a href="{{ url_for('logout') }}">
+        Logout
+       </a>
+      </li>
+     </ul>
+     <a class="burger ml-auto float-right site-menu-toggle js-menu-toggle d-inline-block d-lg-none light" data-target="#main-navbar" data-toggle="collapse" href="#">
+      <span>
+      </span>
+     </a>
+    </div>
+   </div>
+  </nav>
+  <div class="hero hero-inner">
+   <div class="container">
+    <div class="row align-items-center">
+     <div class="col-lg-6 mx-auto text-center">
+      <div class="intro-wrap">
+       <h1 class="mb-0">
+        Update Attraction 
+       </h1>
+       <p class="text-white">
+            {{attraction.name}}       </p>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <br>
+  <br>
+  <div class="row justify-content-center">
+      <div class="col-lg-4">
+<form method="POST">
+  <div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" class="form-control" id="name" name="name" value="{{ attraction.name }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="address" class="form-label">Address</label>
+    <input type="text" class="form-control" id="address" name="address" value="{{ attraction.address }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="overview" class="form-label">Overview</label>
+    <textarea class="form-control" id="overview" name="overview" rows="3" required>{{ attraction.overview }}</textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="postal_code" class="form-label">Postal Code</label>
+    <input type="text" class="form-control" id="postal_code" name="postal_code" value="{{ attraction.postal_code }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="latitude" class="form-label">Latitude</label>
+    <input type="text" class="form-control" id="latitude" name="latitude" value="{{ attraction.latitude }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="longitude" class="form-label">Longitude</label>
+    <input type="text" class="form-control" id="longitude" name="longitude" value="{{ attraction.longitude }}">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Update Attraction</button>
+</form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/popper.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/jquery.waypoints.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/jquery.fancybox.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/aos.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/moment.min.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/daterangepicker.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/typed.js') }}">
+  </script>
+  <script src="{{ url_for('static', filename='js/custom.js') }}">
+  </script>
+ </body>
+</html>

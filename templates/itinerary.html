@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}My Itinerary - KopiGo{% endblock %}
+
+{% block hero %}
+<div class="hero hero-inner">
+  <div class="container text-center">
+    <h1 class="text-white">Your Travel Itinerary</h1>
+    <p class="text-white">Plan your route and view all added attractions!</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="container-fluid mt-4">
+  <div class="row" style="height: 80vh; margin-left: 50px; margin-right: 50px;">
+    
+    <!-- Left Sidebar: 30% -->
+    <div class="col-md-4" style="overflow-y: auto; max-height: 85vh;">
+      <h4 class="mb-3 fw-bold">Your Itinerary</h4>
+
+      <!-- Postal Input + Plan Button -->
+      <div class="d-flex align-items-center mb-4 gap-2">
+        <div class="text-center" style="width: 30px;">
+          <i class="bi bi-circle" style="font-size: 1.2rem;"></i>
+        </div>
+        <div class="input-group flex-grow-1">
+          <input type="text" id="startLocation" class="form-control" placeholder="Enter Starting Postal Code" value="{{ request.args.get('start', '') }}">
+          <button style="margin-left: 6px;" onclick="sortByDistance()" class="btn btn-dark px-4 rounded-end">Plan Route</button>
+        </div>
+      </div>
+
+      <!-- Waypoints -->
+      <div id="itinerary-list">
+        {% for item in itinerary_items %}
+        <div class="d-flex align-items-start mb-3">
+          <div class="me-2 text-center" style="width: 30px;">
+            <i class="bi bi-geo-alt-fill text-danger" style="font-size: 1.5rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <div class="card border rounded shadow-sm mb-2">
+              <div class="card-body py-2 px-3">
+                <h6 class="card-title mb-1 fw-semibold">{{ item.name }}</h6>
+                <p class="card-text text-muted small mb-1">{{ item.address }}</p>
+                <p class="card-text mb-2"><strong class="me-1">Distance:</strong> {{ item.distance if item.distance else 'N/A' }} km</p>
+                <a href="{{ url_for('remove_itinerary', attraction_id=item.id, start=start) }}" class="btn btn-outline-danger btn-sm w-100 rounded-pill">Remove</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right Map: 70% -->
+    <div class="col-md-8">
+      <div id="map" style="height: 100%; width: 100%; border-radius: 8px;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+let startMarker;
+const itineraryItems = {{ itinerary_items | tojson }};
+const map = L.map('map').setView([1.29, 103.85], 13);
+
+// Add tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// Flash messaging
+function flash(message, category = "info") {
+  const container = document.createElement("div");
+  container.className = `alert alert-${category} alert-dismissible fade show`;
+  container.role = "alert";
+  container.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  `;
+  document.querySelector(".flash-container").prepend(container);
+  setTimeout(() => container.remove(), 4000);
+}
+
+// Plot all itinerary markers and fix bounds once
+function renderMarkers(items) {
+  items.forEach(item => {
+    if (item.latitude && item.longitude) {
+      L.marker([item.latitude, item.longitude])
+        .addTo(map)
+        .bindPopup(`<strong>${item.name}</strong><br>${item.address}`);
+    }
+  });
+
+  const bounds = items
+    .filter(i => i.latitude && i.longitude)
+    .map(i => [i.latitude, i.longitude]);
+
+  if (bounds.length > 0) {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
+}
+
+// Call once on load
+renderMarkers(itineraryItems);
+
+// Plot start marker in red
+function plotStartMarker(lat, lon) {
+  if (startMarker) map.removeLayer(startMarker);
+
+  const redIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    shadowSize: [41, 41]
+  });
+
+  startMarker = L.marker([lat, lon], { icon: redIcon })
+    .addTo(map)
+    .bindPopup("<b>Starting Point</b>")
+    .openPopup();
+
+  // Optional: move view to start (but don't change zoom)
+  map.panTo([lat, lon]);
+}
+
+// Distance calculation
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Sort attractions based on distance
+async function sortByDistance() {
+  const postalCode = document.getElementById("startLocation").value.trim();
+  if (!postalCode) return flash("Please enter a postal code.", "danger");
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${postalCode}&country=Singapore&format=json`);
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      return flash("Invalid postal code entered.", "danger");
+    }
+
+    const { lat, lon } = data[0];
+    plotStartMarker(lat, lon);
+
+    const sorted = itineraryItems.map(i => {
+      const dist = (i.latitude && i.longitude)
+        ? haversine(parseFloat(lat), parseFloat(lon), i.latitude, i.longitude).toFixed(2)
+        : null;
+      return { ...i, distance: dist };
+    }).sort((a, b) => a.distance - b.distance);
+
+    const container = document.getElementById("itinerary-list");
+    container.innerHTML = "";
+    sorted.forEach(item => {
+      container.innerHTML += `
+        <div class="d-flex align-items-start mb-3">
+            <div class="me-2 text-center" style="width: 30px;">
+            <i class="bi bi-geo-alt-fill text-danger" style="font-size: 1.5rem;"></i>
+            </div>
+            <div class="flex-grow-1">
+            <div class="card border rounded shadow-sm mb-2">
+                <div class="card-body py-2 px-3">
+                <h6 class="card-title mb-1 fw-semibold">${item.name}</h6>
+                <p class="card-text text-muted small mb-1">${item.address}</p>
+                <p class="card-text mb-2">
+                    <strong class="me-1">Distance:</strong> ${item.distance || "N/A"} km
+                </p>
+                <a href="/remove_itinerary/${item.id}?start=${encodeURIComponent(postalCode)}"
+                    class="btn btn-outline-danger btn-sm w-100 rounded-pill">Remove</a>
+                </div>
+            </div>
+            </div>
+        </div>`;
+    });
+
+  } catch (err) {
+    console.error(err);
+    flash("Error fetching location data.", "danger");
+  }
+}
+</script>
+
+<style>
+  .card-title { font-size: 1rem; }
+  .btn-outline-danger:hover {
+    background-color: #ffe5e5;
+    border-color: #dc3545;
+  }
+</style>
+{% endblock %}

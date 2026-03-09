@@ -1,0 +1,24 @@
+<h2>🍜 Food Places in {{ region }} Region</h2>
+
+<form method="get">
+  <select name="region">
+    <option value="Central">Central</option>
+    <option value="East">East</option>
+    <option value="West">West</option>
+    <option value="North">North</option>
+    <option value="South">South</option>
+  </select>
+  <button type="submit">Filter</button>
+</form>
+
+<table>
+  <tr><th>Name</th><th>Category</th><th>Hygiene</th><th>Region</th></tr>
+  {% for row in results %}
+  <tr>
+    <td>{{ row.name }}</td>
+    <td>{{ row.category }}</td>
+    <td>{{ row.hygiene_rating }}</td>
+    <td>{{ row.region_name }}</td>
+  </tr>
+  {% endfor %}
+</table>
