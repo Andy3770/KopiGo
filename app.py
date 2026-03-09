@@ -39,7 +39,7 @@ s3 = boto3.client(
 )
 
 # MongoDB Atlas NoSQL Connection
-client = MongoClient("mongodb+srv://kopigoadmin:kopigopassword@kopigo.47bjtm9.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true")
+client = MongoClient()
 mongodb = client["KopiGo"]
 mongo_reviews = mongodb["User_Reviews"]
 mongo_users = mongodb["Users"]
